@@ -10,35 +10,45 @@ public class ChessBoard {
   private byte[][] board = new byte[8][8];
 
   private static enum Pieces {
-    KING(1, 0), QUEEN(2, 9), ROOK(3, 5), BISHOP(4, 3), KNIGHT(5, 3), PAWN(6, 1);
+    KING(1, 0), QUEEN(2, 9), ROOK(3, 5), KNIGHT(4, 3), BISHOP(5, 3), PAWN(6, 1);
     
     private final int value;
-    private final int weight;
+    private final int worth;
 
     private Pieces(int value, int weight) {
       this.value = value;
-      this.weight = weight;
+      this.worth = weight;
     }
 
     public int getValue() {
       return value;
     }
 
-    public int getWeight() {
-      return weight;
+    public int getWorth() {
+      return worth;
     }
   }
 
   public ChessBoard() {
-    for (int file = 0; file < 8; file++) {
+    for (int file = 0; file <= 7; file++) {
       board[1][file] = (byte) Pieces.PAWN.getValue();
-    }
-
-    for (int file = 0; file < 8; file++) {
       board[6][file] = (byte) -Pieces.PAWN.getValue();
     }
+    
+    for (int offset = 0, piece = 3; offset < 3; offset++, piece++) {
+      board[0][offset] = (byte) piece;
+      board[0][7 - offset] = (byte) piece;
+      board[7][offset] = (byte) -piece;
+      board[7][7 - offset] = (byte) -piece;
+    }
+
+    board[0][3] = (byte) Pieces.KING.getValue();
+    board[7][3] = (byte) Pieces.KING.getValue();
+    board[0][4] = (byte) Pieces.QUEEN.getValue();
+    board[7][4] = (byte) Pieces.QUEEN.getValue();
   }
 
+  @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
     builder.append("-------------------------\n");
