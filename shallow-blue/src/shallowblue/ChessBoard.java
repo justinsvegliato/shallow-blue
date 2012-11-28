@@ -31,6 +31,7 @@ public class ChessBoard {
     board[59] = -king;
     board[60] = -queen;
   }
+  
   private static byte[] board = new byte[64];
   private static final byte king = 1;
   private static final byte queen = 2;
@@ -62,6 +63,10 @@ public class ChessBoard {
     return -1;
   }
 
+  public byte getPiece(byte index){
+    return board[index];
+  }
+  
   public String toString() {
     StringBuilder builder = new StringBuilder();
     builder.append("-------------------------\n");
