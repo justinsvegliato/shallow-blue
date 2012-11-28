@@ -15,18 +15,18 @@ public class MovesetFactory {
   };
   private static final byte[][] rookMoveset = {
     {-10, -20, -30, -40, -50, -60, -70},
-    {-7, -6, -5, -4, -3, -2, -1},
+    {-1, -2, -3, -4, -5, -6, -7},
     {1, 2, 3, 4, 5, 6, 7},
     {10, 20, 30, 40, 50, 60, 70}
   };
   private static final byte[][] queenMoveset = {
-    {-10, -20, -30, -40, -50, -60, -70},
-    {-7, -6, -5, -4, -3, -2, -1},
-    {1, 2, 3, 4, 5, 6, 7},
-    {10, 20, 30, 40, 50, 60, 70},
-    {-9, -18, -27, -36, -45, -54, -63},
     {-11, -22, -33, -44, -55, -66, -77},
+    {-10, -20, -30, -40, -50, -60, -70},
+    {-9, -18, -27, -36, -45, -54, -63},
+    {-1, -2, -3, -4, -5, -6, -7},
+    {1, 2, 3, 4, 5, 6, 7},
     {9, 18, 27, 36, 45, 54, 63},
+    {10, 20, 30, 40, 50, 60, 70},
     {11, 22, 33, 44, 55, 66, 77}
   };
   private static final byte[][] bishopMoveset = {
@@ -38,23 +38,23 @@ public class MovesetFactory {
 
   public byte[] getValidMoveset(byte from, ChessBoard board) {
     switch (board.getPiece(from)) {
-      case 1:
-      case -1:
+      case ChessBoard.king:
+      case -ChessBoard.king:
         return parseMoveset(from, kingMoveset, board);
-      case 2:
-      case -2:
+      case ChessBoard.queen:
+      case -ChessBoard.queen:
         return parseMoveset(from, queenMoveset, board);
-      case 3:
-      case -3:
+      case ChessBoard.rook:
+      case -ChessBoard.rook:
         return parseMoveset(from, rookMoveset, board);
-      case 4:
-      case -4:
+      case ChessBoard.knight:
+      case -ChessBoard.knight:
         return parseMoveset(from, knightMoveset, board);
-      case 5:
-      case -5:
+      case ChessBoard.bishop:
+      case -ChessBoard.bishop:
         return parseMoveset(from, bishopMoveset, board);
-      case 6:
-      case -6:
+      case ChessBoard.pawn:
+      case -ChessBoard.pawn:
         return parseMoveset(from, pawnMoveset, board);
     }
     return null;
@@ -69,11 +69,15 @@ public class MovesetFactory {
     }
 
     for (byte[] slide : moveset) {
+      byte lastMove = 0;
       for (byte delta : slide) {
         byte move = (byte) (color * delta);
-        if (board.isValidMove(from, move)) {
+        if (board.isValidMove(from, move, lastMove)) {
           bytes.write(from + move);
+        } else {
+          break;
         }
+        lastMove = move;
       }
     }
 
