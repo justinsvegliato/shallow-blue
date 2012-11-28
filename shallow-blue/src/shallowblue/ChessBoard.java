@@ -4,8 +4,18 @@ public class ChessBoard {
 
   public static void main(String[] args) {
     ChessBoard board = new ChessBoard();
+    MovesetFactory factory = new MovesetFactory();
+    printMoveset(factory.getValidMoveset((byte) 32, board));
     System.out.println(board);
   }
+  static byte[] board = new byte[120];
+  static final byte king = 1;
+  static final byte pawn = 2;
+  static final byte knight = 3;
+  static final byte queen = 5;
+  static final byte rook = 6;
+  static final byte bishop = 7;
+  static final byte border = 9;
 
   public ChessBoard() {
     for (int i = 0; i < 10; i++) {
@@ -41,14 +51,6 @@ public class ChessBoard {
     board[94] = -king;
     board[95] = -queen;
   }
-  private static byte[] board = new byte[120];
-  private static final byte king = 1;
-  private static final byte queen = 2;
-  private static final byte rook = 3;
-  private static final byte knight = 4;
-  private static final byte bishop = 5;
-  private static final byte pawn = 6;
-  private static final byte border = 7;
 
   public byte getWorth(byte piece) {
     switch (piece) {
@@ -72,22 +74,49 @@ public class ChessBoard {
     }
     return -1;
   }
+  
+  
 
   public void move(byte from, byte to) {
-    
   }
-  
+
   public void undo() {
-    
   }
 
   public byte getPiece(byte piece) {
     return board[piece];
   }
 
-  public boolean isValidMove(byte from, byte move) {
-    boolean withinBounds = board[from + move] == border;
-    return withinBounds;
+  public boolean isValidMove(byte from, byte move, byte lastMove) {
+    boolean withinBounds = board[from + move] != border;
+    boolean isInArmy = board[from] * board[from + move] > 0;
+    boolean hasClearPath = true;
+    if ((board[from] / 4) == 1 && lastMove != 0) {
+      hasClearPath = board[from + lastMove] != 0;
+    }
+
+    boolean satisfiesFringe = true;
+    if (getPiece(from) == pawn) {
+      if (move == 20 && !(30 < from && from < 39)) {
+        satisfiesFringe = false;
+      } else if (move == -20 && !(80 < from && from < 89)) {
+        satisfiesFringe = false;
+      }
+
+      if ((move == 9 || move == 11) && !((board[from] * board[from + move]) < 0)) {
+        satisfiesFringe = false;
+      }
+
+      if (move == 10 && (board[from] * board[from + move]) < 0) {
+        satisfiesFringe = false;
+      }
+
+      if (move == 20 && ((board[from] * board[from + move]) < 0) || ((board[from] * board[from + 10]) < 0)) {
+        satisfiesFringe = false;
+      }
+    }
+
+    return withinBounds && !isInArmy && hasClearPath && satisfiesFringe;
   }
 
   @Override
@@ -105,5 +134,12 @@ public class ChessBoard {
       }
     }
     return builder.toString();
+  }
+
+  public static void printMoveset(byte[] moveset) {
+    for (byte move : moveset) {
+      System.out.println(move);
+    }
+
   }
 }
