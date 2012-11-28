@@ -41,25 +41,29 @@ public class ChessBoard {
 
   public byte getWorth(byte piece) {
     switch (piece) {
-      case 1:
-      case -1:
+      case king:
+      case -king:
         return Byte.MAX_VALUE;
-      case 2:
-      case -2:
+      case queen:
+      case -queen:
         return 9;
-      case 3:
-      case -3:
+      case rook:
+      case -rook:
         return 5;
-      case 4:
-      case 5:
-      case -4:
-      case -5:
+      case knight:
+      case bishop:
+      case -knight:
+      case -bishop:
         return 3;
-      case 6:
-      case -6:
+      case pawn:
+      case -pawn:
         return 1;
     }
     return -1;
+  }
+  
+  public byte getPiece(byte piece) {
+    return board[piece];
   }
 
   public String toString() {
