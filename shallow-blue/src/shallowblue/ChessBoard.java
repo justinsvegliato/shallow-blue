@@ -14,14 +14,14 @@ public class ChessBoard {
       board[100 + i] = border;
       board[110 + i] = border;
     }
-    
-    
+
+
     for (int i = 0; i < 8; i++) {
       board[20 + i * 10] = border;
       board[29 + i * 10] = border;
       board[31 + i] = pawn;
       board[81 + i] = -pawn;
-    }    
+    }
 
     board[21] = rook;
     board[22] = knight;
@@ -41,9 +41,7 @@ public class ChessBoard {
     board[94] = -king;
     board[95] = -queen;
   }
-  
   private static byte[] board = new byte[120];
-  
   private static final byte king = 1;
   private static final byte queen = 2;
   private static final byte rook = 3;
@@ -74,9 +72,22 @@ public class ChessBoard {
     }
     return -1;
   }
+
+  public void move(byte from, byte to) {
+    
+  }
   
+  public void undo() {
+    
+  }
+
   public byte getPiece(byte piece) {
     return board[piece];
+  }
+
+  public boolean isValidMove(byte from, byte move) {
+    boolean withinBounds = board[from + move] == border;
+    return withinBounds;
   }
 
   @Override
