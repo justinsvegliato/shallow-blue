@@ -67,19 +67,52 @@ public class MovesetFactory {
     if (from < 0) {
       color = (byte) -color;
     }
-
+    
+    
+//    for (byte[] slide : moveset) {
+//      byte lastMove = 0;
+//      byte i = 0;
+//      byte delta = slide[i];
+//      byte move = (byte) (color * delta);
+//      boolean validMove = board.isValidMove(from, move, lastMove);
+//      while (validMove && i < slide.length) {
+//        bytes.write(from + move);
+//        lastMove = move;
+//        delta = slide[i];
+//        move = (byte) (color * delta);
+//        validMove = board.isValidMove(from, move, lastMove);
+//        
+//      }
+//    }
+    
+    // Removed break
     for (byte[] slide : moveset) {
       byte lastMove = 0;
-      for (byte delta : slide) {
+      byte i = 0;
+      boolean checkNext = true;
+      while (checkNext && i < slide.length) {
+        byte delta = slide[i++];
         byte move = (byte) (color * delta);
         if (board.isValidMove(from, move, lastMove)) {
           bytes.write(from + move);
         } else {
-          break;
+          checkNext = false;
         }
-        lastMove = move;
       }
     }
+    
+//    for (byte[] slide : moveset) {
+//      byte lastMove = 0;
+//      for (byte delta : slide) {
+//        byte move = (byte) (color * delta);
+//        if (board.isValidMove(from, move, lastMove)) {
+//          bytes.write(from + move);
+//        } else {
+//          break;
+//        }
+//        lastMove = move;
+//      }
+//    }
 
     return bytes.toByteArray();
   }
