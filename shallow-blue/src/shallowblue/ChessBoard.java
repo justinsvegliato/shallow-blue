@@ -1,14 +1,9 @@
 package shallowblue;
 
-public class ChessBoard {
+import java.io.ByteArrayOutputStream;
 
-  public static void main(String[] args) {
-    ChessBoard board = new ChessBoard();
-    MovesetFactory factory = new MovesetFactory();
-    printMoveset(factory.getValidMoveset((byte) 32, board));
-    System.out.println(board);
-  }
-  static byte[] board = new byte[120];
+public class ChessBoard {
+  private static byte[] board = new byte[120];
   static final byte king = 1;
   static final byte pawn = 2;
   static final byte knight = 3;
@@ -75,16 +70,34 @@ public class ChessBoard {
     return -1;
   }
   
-  
-
-  public void move(byte from, byte to) {
+  public byte move(byte from, byte to) {
+    byte removedPiece = board[to];
+    board[to] = board[from];
+    board[from] = 0;
+    return removedPiece;
   }
 
-  public void undo() {
+  public void undo(byte from, byte to, byte piece) {
+    board[from] = board[to];
+    board[to] = piece;
   }
 
   public byte getPiece(byte piece) {
     return board[piece];
+  }
+  
+  public byte[] getPiecePositions() {
+    ByteArrayOutputStream positions = new ByteArrayOutputStream();
+    for (int i = 0; i < 8; i++) {
+      for(int j = 0; j < 8; j++){
+        int position = i * 10 + 20 + j + 1;
+        if(board[position] != 0){
+          positions.write(position);
+        }
+      }
+    }
+    
+    return positions.toByteArray();
   }
 
   public boolean isValidMove(byte from, byte move, byte lastMove) {
@@ -134,12 +147,5 @@ public class ChessBoard {
       }
     }
     return builder.toString();
-  }
-
-  public static void printMoveset(byte[] moveset) {
-    for (byte move : moveset) {
-      System.out.println(move);
-    }
-
   }
 }

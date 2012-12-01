@@ -4,7 +4,6 @@ import java.io.ByteArrayOutputStream;
 
 public class MovesetFactory {
 
-  private static MovesetFactory instance;
   private static final byte[][] pawnMoveset = {
     {9}, {10}, {11}, {20}
   };
@@ -37,19 +36,7 @@ public class MovesetFactory {
     {11, 22, 33, 44, 55, 66, 77}
   };
 
-  private MovesetFactory() {
-  }
-
-  public static MovesetFactory getInstance() {
-    if (instance == null) {
-      synchronized (MovesetFactory.class) {
-        if (instance == null) {
-          instance = new MovesetFactory();
-        }
-      }
-    }
-    return instance;
-  }
+  private MovesetFactory() {}
 
   public static byte[] getValidMoveset(byte from, ChessBoard board) {
     switch (board.getPiece(from)) {
