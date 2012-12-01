@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 
 public class MovesetFactory {
 
+  private static MovesetFactory instance;
   private static final byte[][] pawnMoveset = {
     {9}, {10}, {11}, {20}
   };
@@ -36,56 +37,52 @@ public class MovesetFactory {
     {11, 22, 33, 44, 55, 66, 77}
   };
 
-  public byte[] getValidMoveset(byte from, ChessBoard board) {
+  private MovesetFactory() {
+  }
+
+  public static MovesetFactory getInstance() {
+    if (instance == null) {
+      synchronized (MovesetFactory.class) {
+        if (instance == null) {
+          instance = new MovesetFactory();
+        }
+      }
+    }
+    return instance;
+  }
+
+  public static byte[] getValidMoveset(byte from, ChessBoard board) {
     switch (board.getPiece(from)) {
       case ChessBoard.king:
       case -ChessBoard.king:
-        return parseMoveset(from, kingMoveset, board);
+        return generateMoveset(from, kingMoveset, board);
       case ChessBoard.queen:
       case -ChessBoard.queen:
-        return parseMoveset(from, queenMoveset, board);
+        return generateMoveset(from, queenMoveset, board);
       case ChessBoard.rook:
       case -ChessBoard.rook:
-        return parseMoveset(from, rookMoveset, board);
+        return generateMoveset(from, rookMoveset, board);
       case ChessBoard.knight:
       case -ChessBoard.knight:
-        return parseMoveset(from, knightMoveset, board);
+        return generateMoveset(from, knightMoveset, board);
       case ChessBoard.bishop:
       case -ChessBoard.bishop:
-        return parseMoveset(from, bishopMoveset, board);
+        return generateMoveset(from, bishopMoveset, board);
       case ChessBoard.pawn:
       case -ChessBoard.pawn:
-        return parseMoveset(from, pawnMoveset, board);
+        return generateMoveset(from, pawnMoveset, board);
     }
     return null;
   }
 
-  private byte[] parseMoveset(byte from, byte[][] moveset, ChessBoard board) {
+  private static byte[] generateMoveset(byte from, byte[][] moveset, ChessBoard board) {
     ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 
     byte color = 1;
     if (from < 0) {
       color = (byte) -color;
     }
-    
-    
-//    for (byte[] slide : moveset) {
-//      byte lastMove = 0;
-//      byte i = 0;
-//      byte delta = slide[i];
-//      byte move = (byte) (color * delta);
-//      boolean validMove = board.isValidMove(from, move, lastMove);
-//      while (validMove && i < slide.length) {
-//        bytes.write(from + move);
-//        lastMove = move;
-//        delta = slide[i];
-//        move = (byte) (color * delta);
-//        validMove = board.isValidMove(from, move, lastMove);
-//        
-//      }
-//    }
-    
-    // Removed break
+
     for (byte[] slide : moveset) {
       byte lastMove = 0;
       byte i = 0;
@@ -100,7 +97,6 @@ public class MovesetFactory {
         }
       }
     }
-    
 //    for (byte[] slide : moveset) {
 //      byte lastMove = 0;
 //      for (byte delta : slide) {
@@ -113,7 +109,6 @@ public class MovesetFactory {
 //        lastMove = move;
 //      }
 //    }
-
     return bytes.toByteArray();
   }
 }
