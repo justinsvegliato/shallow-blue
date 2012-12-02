@@ -3,6 +3,7 @@ package shallowblue;
 import java.io.ByteArrayOutputStream;
 
 public class ChessBoard {
+  
   private static byte[] board = new byte[120];
   static final byte king = 1;
   static final byte pawn = 2;
@@ -86,12 +87,12 @@ public class ChessBoard {
     return board[piece];
   }
   
-  public byte[] getPiecePositions() {
+  public byte[] getPiecePositions(int color) {
     ByteArrayOutputStream positions = new ByteArrayOutputStream();
     for (int i = 0; i < 8; i++) {
       for(int j = 0; j < 8; j++){
         int position = i * 10 + 20 + j + 1;
-        if(board[position] != 0){
+        if(board[position] != 0 && color * board[position] > 0){
           positions.write(position);
         }
       }
@@ -108,28 +109,28 @@ public class ChessBoard {
       hasClearPath = board[from + lastMove] != 0;
     }
 
-    boolean satisfiesFringe = true;
+    boolean satisfiesFringeCase = true;
     if (getPiece(from) == pawn) {
       if (move == 20 && !(30 < from && from < 39)) {
-        satisfiesFringe = false;
+        satisfiesFringeCase = false;
       } else if (move == -20 && !(80 < from && from < 89)) {
-        satisfiesFringe = false;
+        satisfiesFringeCase = false;
       }
 
       if ((move == 9 || move == 11) && !((board[from] * board[from + move]) < 0)) {
-        satisfiesFringe = false;
+        satisfiesFringeCase = false;
       }
 
       if (move == 10 && (board[from] * board[from + move]) < 0) {
-        satisfiesFringe = false;
+        satisfiesFringeCase = false;
       }
 
       if (move == 20 && ((board[from] * board[from + move]) < 0) || ((board[from] * board[from + 10]) < 0)) {
-        satisfiesFringe = false;
+        satisfiesFringeCase = false;
       }
     }
 
-    return withinBounds && !isInArmy && hasClearPath && satisfiesFringe;
+    return withinBounds && !isInArmy && hasClearPath && satisfiesFringeCase;
   }
 
   @Override

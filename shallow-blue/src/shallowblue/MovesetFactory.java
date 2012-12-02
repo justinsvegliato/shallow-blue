@@ -66,8 +66,8 @@ public class MovesetFactory {
     ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 
     byte color = 1;
-    if (from < 0) {
-      color = (byte) -color;
+    if (board.getPiece(from) < 0) {
+      color = (byte) -1;
     }
 
     for (byte[] slide : moveset) {
