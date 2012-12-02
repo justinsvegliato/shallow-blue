@@ -60,7 +60,8 @@ public class MovesetFactory {
       case -ChessBoard.pawn:
         return generateMoveset(from, pawnMoveset, board);
       default:
-        throw new IllegalArgumentException("There is not a valid piece at the specified location.");
+        String message = "An invalid piece is at the specified location";
+        throw new IllegalArgumentException(message);
     }
   }
 

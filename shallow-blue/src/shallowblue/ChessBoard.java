@@ -91,11 +91,15 @@ public class ChessBoard {
     if (piece == pawn) {
       if (Math.abs(move) == 10 && (board[from] * board[from + move]) < 0) {
         satisfiesFringeCase = false;
-      } else if ((move == 20 && !(30 < from && from < 39)) || (move == -20 && !(80 < from && from < 89))) {
+      } else if ((move == 20 && !(30 < from && from < 39)) 
+              || (move == -20 && !(80 < from && from < 89))) {
         satisfiesFringeCase = false;
-      } else if (Math.abs(move) == 20 && ((board[from] * board[from + move]) < 0) && ((board[from] * board[from + 10]) < 0)) {
+      } else if (Math.abs(move) == 20 
+              && ((board[from] * board[from + move]) < 0) 
+              && ((board[from] * board[from + 10]) < 0)) {
         satisfiesFringeCase = false;
-      } else if ((Math.abs(move) == 9 || Math.abs(move) == 11) && !((board[from] * board[from + move]) < 0)) {
+      } else if ((Math.abs(move) == 9 || Math.abs(move) == 11) 
+              && !((board[from] * board[from + move]) < 0)) {
         satisfiesFringeCase = false;
       }
     }
@@ -127,7 +131,7 @@ public class ChessBoard {
       case border: 
         return 'X';
       default:
-        throw new IllegalArgumentException("This is an invalid piece");
+        throw new IllegalArgumentException("An invalid piece was specified.");
     }
 
   }

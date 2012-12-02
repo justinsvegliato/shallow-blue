@@ -93,7 +93,7 @@ public class Brain {
       case -ChessBoard.pawn:
         return 1;
       default:
-        throw new IllegalArgumentException("This is an invalid piece");
+        throw new IllegalArgumentException("An invalid piece was specified");
     }
   }
 
