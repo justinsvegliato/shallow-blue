@@ -3,7 +3,7 @@ package shallowblue;
 import java.io.ByteArrayOutputStream;
 
 public class ChessBoard {
-  
+
   private static byte[] board = new byte[120];
   static final byte king = 1;
   static final byte pawn = 2;
@@ -20,7 +20,6 @@ public class ChessBoard {
       board[100 + i] = border;
       board[110 + i] = border;
     }
-
 
     for (int i = 0; i < 8; i++) {
       board[20 + i * 10] = border;
@@ -48,29 +47,6 @@ public class ChessBoard {
     board[95] = -queen;
   }
 
-  public byte getWorth(byte piece) {
-    switch (piece) {
-      case king:
-      case -king:
-        return Byte.MAX_VALUE;
-      case queen:
-      case -queen:
-        return 9;
-      case rook:
-      case -rook:
-        return 5;
-      case knight:
-      case bishop:
-      case -knight:
-      case -bishop:
-        return 3;
-      case pawn:
-      case -pawn:
-        return 1;
-    }
-    return -1;
-  }
-  
   public byte move(byte from, byte to) {
     byte removedPiece = board[to];
     board[to] = board[from];
@@ -86,18 +62,18 @@ public class ChessBoard {
   public byte getPiece(byte piece) {
     return board[piece];
   }
-  
+
   public byte[] getPiecePositions(int color) {
     ByteArrayOutputStream positions = new ByteArrayOutputStream();
     for (int i = 0; i < 8; i++) {
-      for(int j = 0; j < 8; j++){
+      for (int j = 0; j < 8; j++) {
         int position = i * 10 + 20 + j + 1;
-        if(board[position] != 0 && color * board[position] > 0){
+        if (board[position] != 0 && color * board[position] > 0) {
           positions.write(position);
         }
       }
     }
-    
+
     return positions.toByteArray();
   }
 
@@ -110,22 +86,15 @@ public class ChessBoard {
     }
 
     boolean satisfiesFringeCase = true;
-    if (getPiece(from) == pawn) {
-      if (move == 20 && !(30 < from && from < 39)) {
+    byte piece = (byte) Math.abs(getPiece(from));
+    if (piece == pawn) {
+      if ((move == 20 && !(30 < from && from < 39)) || (move == -20 && !(80 < from && from < 89))) {
         satisfiesFringeCase = false;
-      } else if (move == -20 && !(80 < from && from < 89)) {
+      } else if ((Math.abs(move) == 9 || Math.abs(move) == 11) && !((board[from] * board[from + move]) < 0)) {
         satisfiesFringeCase = false;
-      }
-
-      if ((move == 9 || move == 11) && !((board[from] * board[from + move]) < 0)) {
+      } else if (Math.abs(move) == 10 && (board[from] * board[from + move]) < 0) {
         satisfiesFringeCase = false;
-      }
-
-      if (move == 10 && (board[from] * board[from + move]) < 0) {
-        satisfiesFringeCase = false;
-      }
-
-      if (move == 20 && ((board[from] * board[from + move]) < 0) || ((board[from] * board[from + 10]) < 0)) {
+      } else if (Math.abs(move) == 20 && ((board[from] * board[from + move]) < 0) || ((board[from] * board[from + 10]) < 0)) {
         satisfiesFringeCase = false;
       }
     }
