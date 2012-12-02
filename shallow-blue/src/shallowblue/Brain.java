@@ -17,29 +17,29 @@ public class Brain {
     }
   }
 
-  public Brain(ChessBoard board, int depth) {
+  public Brain(ChessBoard board, int maxDepth) {
     this.board = board;
-    this.maxDepth = depth;
+    this.maxDepth = maxDepth;
   }
 
   public int chooseMove() {
     int v = maximize(Integer.MIN_VALUE, Integer.MAX_VALUE, 0);
     return v;
   }
-  
-  public int maximize(int alpha, int beta, int depth) {
+
+  private int maximize(int alpha, int beta, int depth) {
     if (depth == maxDepth) {
       return evaluate(board, 1);
     }
-    System.out.println("Start maximizing");
     depth++;
-    
+    System.out.println("Maximizing...");
+
     int v = Integer.MIN_VALUE;
     for (byte from : board.getPiecePositions(1)) {
       for (byte to : MovesetFactory.getValidMoveset(from, board)) {
         byte removedPiece = board.move(from, to);
-        v = Math.max(v, minimize(alpha, beta, depth));
         System.out.println(board);
+        v = Math.max(v, minimize(alpha, beta, depth));
         board.undo(from, to, removedPiece);
         if (v >= beta) {
           return v;
@@ -50,19 +50,19 @@ public class Brain {
     return v;
   }
 
-  public int minimize(int alpha, int beta, int depth) {
+  private int minimize(int alpha, int beta, int depth) {
     if (depth == maxDepth) {
       return evaluate(board, -1);
     }
-    System.out.println("Start minimizing");
     depth++;
-    
+    System.out.println("Minimizing...");
+
     int v = Integer.MAX_VALUE;
     for (byte from : board.getPiecePositions(-1)) {
       for (byte to : MovesetFactory.getValidMoveset(from, board)) {
         byte removedPiece = board.move(from, to);
-        v = Math.min(v, maximize(alpha, beta, depth));
         System.out.println(board);
+        v = Math.min(v, maximize(alpha, beta, depth));
         board.undo(from, to, removedPiece);
         if (v <= alpha) {
           return v;
@@ -73,10 +73,34 @@ public class Brain {
     return v;
   }
 
-  public int evaluate(ChessBoard board, int color) {
+  private byte getWorth(byte piece) {
+    switch (piece) {
+      case ChessBoard.king:
+      case -ChessBoard.king:
+        return Byte.MAX_VALUE;
+      case ChessBoard.queen:
+      case -ChessBoard.queen:
+        return 9;
+      case ChessBoard.rook:
+      case -ChessBoard.rook:
+        return 5;
+      case ChessBoard.knight:
+      case ChessBoard.bishop:
+      case -ChessBoard.knight:
+      case -ChessBoard.bishop:
+        return 3;
+      case ChessBoard.pawn:
+      case -ChessBoard.pawn:
+        return 1;
+      default:
+        throw new IllegalArgumentException("This is an invalid piece");
+    }
+  }
+
+  private int evaluate(ChessBoard board, int color) {
     int value = 0;
     for (byte from : board.getPiecePositions(color)) {
-      value += board.getWorth(board.getPiece(from));
+      value += getWorth(board.getPiece(from));
     }
     return value;
   }

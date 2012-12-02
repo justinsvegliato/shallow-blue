@@ -36,7 +36,8 @@ public class MovesetFactory {
     {11, 22, 33, 44, 55, 66, 77}
   };
 
-  private MovesetFactory() {}
+  private MovesetFactory() {
+  }
 
   public static byte[] getValidMoveset(byte from, ChessBoard board) {
     switch (board.getPiece(from)) {
@@ -58,8 +59,9 @@ public class MovesetFactory {
       case ChessBoard.pawn:
       case -ChessBoard.pawn:
         return generateMoveset(from, pawnMoveset, board);
+      default:
+        throw new IllegalArgumentException("There is not a valid piece at the specified location.");
     }
-    return null;
   }
 
   private static byte[] generateMoveset(byte from, byte[][] moveset, ChessBoard board) {
@@ -77,12 +79,15 @@ public class MovesetFactory {
       while (checkNext && i < slide.length) {
         byte delta = slide[i++];
         byte move = (byte) (color * delta);
+
         if (board.isValidMove(from, move, lastMove)) {
           bytes.write(from + move);
+          //System.out.print(move);
         } else {
           checkNext = false;
         }
       }
+      //System.out.print("\n");
     }
 //    for (byte[] slide : moveset) {
 //      byte lastMove = 0;

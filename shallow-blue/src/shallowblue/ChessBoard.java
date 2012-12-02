@@ -12,6 +12,7 @@ public class ChessBoard {
   static final byte rook = 6;
   static final byte bishop = 7;
   static final byte border = 9;
+  static final byte empty = 0;
 
   public ChessBoard() {
     for (int i = 0; i < 10; i++) {
@@ -88,18 +89,47 @@ public class ChessBoard {
     boolean satisfiesFringeCase = true;
     byte piece = (byte) Math.abs(getPiece(from));
     if (piece == pawn) {
-      if ((move == 20 && !(30 < from && from < 39)) || (move == -20 && !(80 < from && from < 89))) {
+      if (Math.abs(move) == 10 && (board[from] * board[from + move]) < 0) {
+        satisfiesFringeCase = false;
+      } else if ((move == 20 && !(30 < from && from < 39)) || (move == -20 && !(80 < from && from < 89))) {
+        satisfiesFringeCase = false;
+      } else if (Math.abs(move) == 20 && ((board[from] * board[from + move]) < 0) && ((board[from] * board[from + 10]) < 0)) {
         satisfiesFringeCase = false;
       } else if ((Math.abs(move) == 9 || Math.abs(move) == 11) && !((board[from] * board[from + move]) < 0)) {
         satisfiesFringeCase = false;
-      } else if (Math.abs(move) == 10 && (board[from] * board[from + move]) < 0) {
-        satisfiesFringeCase = false;
-      } else if (Math.abs(move) == 20 && ((board[from] * board[from + move]) < 0) || ((board[from] * board[from + 10]) < 0)) {
-        satisfiesFringeCase = false;
       }
     }
-
     return withinBounds && !isInArmy && hasClearPath && satisfiesFringeCase;
+  }
+
+  public char getPieceSymbol(byte piece) {
+    switch (piece) {
+      case king:
+      case -king:
+        return 'K';
+      case queen:
+      case -queen:
+        return 'Q';
+      case rook:
+      case -rook:
+        return 'R';
+      case knight:
+      case -knight:
+        return 'N';
+      case bishop:
+      case -bishop:
+        return 'B';
+      case pawn:
+      case -pawn:
+        return 'P';
+      case empty:
+        return 'O';
+      case border: 
+        return 'X';
+      default:
+        throw new IllegalArgumentException("This is an invalid piece");
+    }
+
   }
 
   @Override
@@ -110,12 +140,15 @@ public class ChessBoard {
       builder.append("|");
       if (board[i] >= 0) {
         builder.append(" ");
+      } else {
+        builder.append("-");
       }
-      builder.append(board[i]);
+      builder.append(getPieceSymbol(board[i]));
       if ((i + 1) % 10 == 0) {
-        builder.append("|\n-------------------------------\n");
+        builder.append("|\n");
       }
     }
+    builder.append("-------------------------------\n");
     return builder.toString();
   }
 }
