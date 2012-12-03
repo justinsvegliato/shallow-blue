@@ -29,23 +29,23 @@ public class ChessBoard {
       board[81 + i] = -pawn;
     }
 
-    board[21] = rook;
-    board[22] = knight;
-    board[23] = bishop;
-    board[28] = rook;
-    board[27] = knight;
-    board[26] = bishop;
-    board[24] = king;
+//    board[21] = rook;
+//    board[22] = knight;
+//    board[23] = bishop;
+//    board[28] = rook;
+//    board[27] = knight;
+//    board[26] = bishop;
+//    board[24] = king;
     board[25] = queen;
 
-    board[91] = -rook;
-    board[92] = -knight;
-    board[93] = -bishop;
-    board[98] = -rook;
-    board[97] = -knight;
-    board[96] = -bishop;
-    board[94] = -king;
-    board[95] = -queen;
+//    board[91] = -rook;
+//    board[92] = -knight;
+//    board[93] = -bishop;
+//    board[98] = -rook;
+//    board[97] = -knight;
+//    board[96] = -bishop;
+//    board[94] = -king;
+    board[95] = -king;
   }
 
   public byte move(byte from, byte to) {
@@ -133,7 +133,6 @@ public class ChessBoard {
       default:
         throw new IllegalArgumentException("An invalid piece was specified.");
     }
-
   }
 
   @Override
