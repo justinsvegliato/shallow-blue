@@ -4,6 +4,10 @@ import java.io.ByteArrayOutputStream;
 
 public class ChessBoard {
 
+  enum Player {
+
+    WHITE, BLACK
+  }
   private static byte[] board = new byte[120];
   static final byte king = 1;
   static final byte pawn = 2;
@@ -29,23 +33,23 @@ public class ChessBoard {
       board[81 + i] = -pawn;
     }
 
-//    board[21] = rook;
-//    board[22] = knight;
-//    board[23] = bishop;
-//    board[28] = rook;
-//    board[27] = knight;
-//    board[26] = bishop;
-//    board[24] = king;
+    board[21] = rook;
+    board[22] = knight;
+    board[23] = bishop;
+    board[28] = rook;
+    board[27] = knight;
+    board[26] = bishop;
+    board[24] = king;
     board[25] = queen;
 
-//    board[91] = -rook;
-//    board[92] = -knight;
-//    board[93] = -bishop;
-//    board[98] = -rook;
-//    board[97] = -knight;
-//    board[96] = -bishop;
-//    board[94] = -king;
-    board[95] = -king;
+    board[91] = -rook;
+    board[92] = -knight;
+    board[93] = -bishop;
+    board[98] = -rook;
+    board[97] = -knight;
+    board[96] = -bishop;
+    board[94] = -king;
+    board[95] = -queen;
   }
 
   public byte move(byte from, byte to) {
@@ -82,24 +86,21 @@ public class ChessBoard {
     boolean withinBounds = board[from + move] != border;
     boolean isInArmy = board[from] * board[from + move] > 0;
     boolean hasClearPath = true;
-    if ((board[from] / 4) == 1 && lastMove != 0) {
+    // Can jump over next piece sometimes....
+    if (Math.abs(board[from]) / 4 == 1 && lastMove != 0) {
       hasClearPath = board[from + lastMove] != 0;
     }
 
     boolean satisfiesFringeCase = true;
     byte piece = (byte) Math.abs(getPiece(from));
     if (piece == pawn) {
-      if (Math.abs(move) == 10 && (board[from] * board[from + move]) < 0) {
+      if (Math.abs(move) == 10 && board[from + move] != 0) {
         satisfiesFringeCase = false;
-      } else if ((move == 20 && !(30 < from && from < 39)) 
-              || (move == -20 && !(80 < from && from < 89))) {
+      } else if (move == 20 && (!(30 < from && from < 39) || board[from + move] != 0 || board[from + 10] != 0)) {
         satisfiesFringeCase = false;
-      } else if (Math.abs(move) == 20 
-              && ((board[from] * board[from + move]) < 0) 
-              && ((board[from] * board[from + 10]) < 0)) {
+      } else if (move == -20 && (!(80 < from && from < 89) || board[from + move] != 0 || board[from - 10] != 0)) {
         satisfiesFringeCase = false;
-      } else if ((Math.abs(move) == 9 || Math.abs(move) == 11) 
-              && !((board[from] * board[from + move]) < 0)) {
+      } else if ((Math.abs(move) == 9 || Math.abs(move) == 11) && !((board[from] * board[from + move]) < 0)) {
         satisfiesFringeCase = false;
       }
     }
@@ -128,7 +129,7 @@ public class ChessBoard {
         return 'P';
       case empty:
         return 'O';
-      case border: 
+      case border:
         return 'X';
       default:
         throw new IllegalArgumentException("An invalid piece was specified.");

@@ -36,8 +36,7 @@ public class MovesetFactory {
     {11, 22, 33, 44, 55, 66, 77}
   };
 
-  private MovesetFactory() {
-  }
+  private MovesetFactory() {}
 
   public static byte[] getValidMoveset(byte from, ChessBoard board) {
     switch (board.getPiece(from)) {
@@ -80,16 +79,15 @@ public class MovesetFactory {
       while (checkNext && i < slide.length) {
         byte delta = slide[i++];
         byte move = (byte) (color * delta);
-
         if (board.isValidMove(from, move, lastMove)) {
           bytes.write(from + move);
-          //System.out.print(move);
         } else {
           checkNext = false;
         }
+        lastMove = move;
       }
-      //System.out.print("\n");
     }
+    
 //    for (byte[] slide : moveset) {
 //      byte lastMove = 0;
 //      for (byte delta : slide) {
@@ -102,6 +100,7 @@ public class MovesetFactory {
 //        lastMove = move;
 //      }
 //    }
+    
     return bytes.toByteArray();
   }
 }
