@@ -39,16 +39,16 @@ public class Brain {
       put(51, 3);
       put(52, 3);
       put(53, 4);
-      put(54, 4);
-      put(55, 4);
+      put(54, 6);
+      put(55, 6);
       put(56, 4);
       put(57, 3);
       put(58, 3);
       put(61, 3);
       put(62, 3);
       put(63, 4);
-      put(64, 4);
-      put(65, 4);
+      put(64, 6);
+      put(65, 6);
       put(66, 4);
       put(67, 3);
       put(68, 3);
@@ -81,10 +81,13 @@ public class Brain {
 
   public static void main(String[] args) throws InterruptedException {
     ChessBoard board = new ChessBoard();
-    Brain brain = new Brain(board, 5);
+    Brain brain = new Brain(board, 1);
+    //System.out.println(board);
+    //printByteArray(MovesetFactory.getValidMoveset((byte) 55, brain.getBoard()));
     brain.setCurrentPlayer(Player.BLACK);
     int id = 1;
     while (true) {
+      //System.out.println("---------------------------------START------------------------------------");
       int move = brain.chooseMove(brain.getCurrentPlayer());
       brain.getBoard().move((brain.getBestMove())[0], (brain.getBestMove())[1]);
       System.out.println("ID: " + id + " Attacking: " + brain.getAttackingPieces(1) + " Best Move:" + brain.getBestMove()[1]+ "\n" + board);
@@ -94,13 +97,15 @@ public class Brain {
         brain.setCurrentPlayer(Player.BLACK);
       }
       id++;
+      //System.out.println("-----------------------------------END------------------------------------");
     }
   }
 
-  public static void printMoveset(byte[] moveset) {
+  public static void printByteArray(byte[] moveset) {
     for (byte move : moveset) {
-      System.out.println("Move: " + move);
+      System.out.print(move + " ");
     }
+    System.out.println();
   }
 
   public Brain(ChessBoard board, int maxDepth) {
@@ -126,17 +131,24 @@ public class Brain {
     depth++;
 
     int v = -MAX;
-    int best = 0;
-    for (byte from : board.getPiecePositions(1)) {
+    int best = -MAX;
+    for (byte from : board.getPiecePositions(1)) {     
+      //System.out.print("Max:");
+      //printByteArray(board.getPiecePositions(1));
       for (byte to : MovesetFactory.getValidMoveset(from, board)) {
         byte removedPiece = board.move(from, to);
+        if (removedPiece == -ChessBoard.king) {
+          System.out.println("----------------------------------KING------------------------------------");
+        }
         v = Math.max(v, minimize(alpha, beta, depth));
         board.undo(from, to, removedPiece);
         if (v >= beta) {
           return v;
         }
         alpha = Math.max(alpha, v);
+        //System.out.println("ALPHA:" + alpha);
         if (currentPlayer == Player.BLACK && depth == 1 && alpha > best) {
+          //System.out.println("----------------------------------ASSIGN------------------------------------");
           bestMove = new byte[]{from, to};
           best = alpha;
         }
@@ -153,10 +165,15 @@ public class Brain {
     depth++;
 
     int v = MAX;
-    int best = 0;
+    int best = MAX;
     for (byte from : board.getPiecePositions(-1)) {
+      //System.out.print("Min:");
+      //printByteArray(board.getPiecePositions(-1));
       for (byte to : MovesetFactory.getValidMoveset(from, board)) {
         byte removedPiece = board.move(from, to);
+        if (removedPiece == ChessBoard.king) {
+         System.out.println("----------------------------------KING------------------------------------");
+        }
         v = Math.min(v, maximize(alpha, beta, depth));
         board.undo(from, to, removedPiece);
         if (v <= alpha) {
@@ -165,6 +182,7 @@ public class Brain {
         beta = Math.min(beta, v);
         // Ask BEN!
         if (currentPlayer == Player.WHITE && depth == 1 && beta < best) {
+          //System.out.println("----------------------------------ASSIGN------------------------------------");
           bestMove = new byte[]{from, to};
           best = beta;
         }

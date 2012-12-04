@@ -33,7 +33,7 @@ public class ChessBoard {
       board[81 + i] = -pawn;
     }
 
-    board[21] = rook;
+    board[21] = pawn;
     board[22] = knight;
     board[23] = bishop;
     board[28] = rook;
@@ -86,9 +86,10 @@ public class ChessBoard {
     boolean withinBounds = board[from + move] != border;
     boolean isInArmy = board[from] * board[from + move] > 0;
     boolean hasClearPath = true;
-    // Can jump over next piece sometimes....
+    // Can jump over next piece sometimes...
+    // Pieces randomly disappear...
     if (Math.abs(board[from]) / 4 == 1 && lastMove != 0) {
-      hasClearPath = board[from + lastMove] != 0;
+      hasClearPath = board[from + lastMove] == 0;
     }
 
     boolean satisfiesFringeCase = true;

@@ -87,20 +87,6 @@ public class MovesetFactory {
         lastMove = move;
       }
     }
-    
-//    for (byte[] slide : moveset) {
-//      byte lastMove = 0;
-//      for (byte delta : slide) {
-//        byte move = (byte) (color * delta);
-//        if (board.isValidMove(from, move, lastMove)) {
-//          bytes.write(from + move);
-//        } else {
-//          break;
-//        }
-//        lastMove = move;
-//      }
-//    }
-    
     return bytes.toByteArray();
   }
 }
