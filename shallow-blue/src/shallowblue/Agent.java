@@ -6,11 +6,11 @@ public class Agent {
 
   private ChessBoard board;
   private int maxDepth;
-  private static byte[] bestMove;
-  private static int INFINITY = 10001;
+  private byte[] bestMove;
   private boolean gameOver = false;
   private final int color;
-  public HashMap<Integer, Integer> positionWorths = new HashMap<Integer, Integer>() {
+  private static int INFINITY = 10001;
+  private HashMap<Integer, Integer> positionWorths = new HashMap<Integer, Integer>() {
     {
       put(21, 1);
       put(22, 1);
@@ -115,7 +115,7 @@ public class Agent {
     return alphaBeta(board, maxDepth, -INFINITY, INFINITY, color);
   }
 
-  public int alphaBeta(ChessBoard board, int depth, int alpha, int beta, int color) {
+  private int alphaBeta(ChessBoard board, int depth, int alpha, int beta, int color) {
     if (depth == 0 || gameOver) {
       return getUtilityValue(board, color);
     }
@@ -191,5 +191,9 @@ public class Agent {
       default:
         throw new IllegalArgumentException("An invalid piece was specified");
     }
+  }
+
+  public byte[] getBestMove() {
+    return bestMove;
   }
 }
