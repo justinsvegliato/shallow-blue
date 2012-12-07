@@ -1,17 +1,15 @@
 package shallowblue;
 
 import java.util.HashMap;
-import shallowblue.ChessBoard.Player;
 
 public class Agent {
 
   private ChessBoard board;
   private int maxDepth;
-  private Player currentPlayer;
-  private byte[] lastMove;
   private static byte[] bestMove;
   private static int INFINITY = 10001;
-  private static boolean gameOver = false;
+  private boolean gameOver = false;
+  private final int color;
   public HashMap<Integer, Integer> positionWorths = new HashMap<Integer, Integer>() {
     {
       put(21, 1);
@@ -80,50 +78,48 @@ public class Agent {
       put(98, 1);
     }
   };
-
-  public static void main(String[] args) {
-    ChessBoard board = new ChessBoard();
-    Agent black = new Agent(board, Player.BLACK.value, 4);
-    Agent white = new Agent(board, Player.WHITE.value, 1);
-    int currentPlayer = 1;
-    int move = 1;
-    
-    System.out.println(board);
-    
-    while (true) {
-      if (currentPlayer == 1) {
-        black.selectBestMove();
-      } else {
-        white.selectBestMove();
-      }
-      int removedPiece = board.move(bestMove[0], bestMove[1]);
-      System.out.println("Turn: " + currentPlayer + " Move: " + move + "\n" + board);
-      if (Math.abs(removedPiece) == ChessBoard.king) {
-        break;
-      }
-      currentPlayer = -currentPlayer;
-      move++;
-    }
-    System.out.println("gg bra");
-  }
-  
-  private final int color;
+//
+//  public static void main(String[] args) {
+//    ChessBoard board = new ChessBoard();
+//    Agent black = new Agent(board, Player.BLACK.value, 4);
+//    Agent white = new Agent(board, Player.WHITE.value, 1);
+//    int currentPlayer = 1;
+//    int move = 1;
+//    
+//    System.out.println(board);
+//    
+//    while (true) {
+//      if (currentPlayer == 1) {
+//        black.selectBestMove();
+//      } else {
+//        white.selectBestMove();
+//      }
+//      int removedPiece = board.move(bestMove[0], bestMove[1]);
+//      System.out.println("Turn: " + currentPlayer + " Move: " + move + "\n" + board);
+//      if (Math.abs(removedPiece) == ChessBoard.king) {
+//        break;
+//      }
+//      currentPlayer = -currentPlayer;
+//      move++;
+//    }
+//    System.out.println("gg bra");
+//  }
 
   public Agent(ChessBoard board, int color, int maxDepth) {
     this.board = board;
-    this.color = color; 
+    this.color = color;
     this.maxDepth = maxDepth;
   }
-  
+
   public int selectBestMove() {
     return alphaBeta(board, maxDepth, -INFINITY, INFINITY, color);
   }
-  
+
   public int alphaBeta(ChessBoard board, int depth, int alpha, int beta, int color) {
     if (depth == 0 || gameOver) {
       return getUtilityValue(board, color);
     }
-    
+
     int score = -INFINITY;
     for (byte from : board.getPiecePositions(color)) {
       for (byte to : MovesetFactory.getValidMoveset(from, board)) {
@@ -135,8 +131,8 @@ public class Agent {
         if (score > alpha) {
           alpha = score;
           if (depth == maxDepth) {
-            bestMove = new byte[] {from, to};
-          } 
+            bestMove = new byte[]{from, to};
+          }
         }
         board.undo(from, to, removedPiece);
         if (alpha >= beta) {
@@ -195,9 +191,5 @@ public class Agent {
       default:
         throw new IllegalArgumentException("An invalid piece was specified");
     }
-  }
-  
-  private boolean isTerminalState() {
-    return gameOver;
   }
 }
