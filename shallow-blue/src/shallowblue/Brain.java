@@ -9,7 +9,8 @@ public class Brain {
   private int maxDepth;
   private byte[] bestMove;
   private Player currentPlayer;
-  private int MAX = 100000;
+  private int MAX = 10000;
+  private static boolean gameOver = false;
   public HashMap<Integer, Integer> positionWorths = new HashMap<Integer, Integer>() {
     {
       put(21, 1);
@@ -79,26 +80,33 @@ public class Brain {
     }
   };
 
-  public static void main(String[] args) throws InterruptedException {
+  public static void main(String[] args) {
+    ChessBoard testBoard = new ChessBoard();
+    Brain brain1 = new Brain(testBoard, 1);
+    testBoard.move((byte) 38, (byte) 58);
+    System.out.println(brain1.evaluate(testBoard));
+
     ChessBoard board = new ChessBoard();
-    Brain brain = new Brain(board, 1);
-    //System.out.println(board);
-    //printByteArray(MovesetFactory.getValidMoveset((byte) 55, brain.getBoard()));
+    Brain brain = new Brain(board, 4);
     brain.setCurrentPlayer(Player.BLACK);
     int id = 1;
-    while (true) {
-      //System.out.println("---------------------------------START------------------------------------");
+    while (!gameOver) {
+      long startTime = System.currentTimeMillis();
       int move = brain.chooseMove(brain.getCurrentPlayer());
       brain.getBoard().move((brain.getBestMove())[0], (brain.getBestMove())[1]);
-      System.out.println("ID: " + id + " Attacking: " + brain.getAttackingPieces(1) + " Best Move:" + brain.getBestMove()[1]+ "\n" + board);
+      //byte[] move = brain.chooseMove(brain.getCurrentPlayer());
+      //brain.getBoard().move(move[0], move[1]);
+      long endTime = System.currentTimeMillis();
+      System.out.println("Total execution time: " + (endTime - startTime));
+      System.out.println("ID: " + id + " Attacking: " + brain.getAttackingPieces(1) + "\n" + board);
       if (brain.getCurrentPlayer() == Player.BLACK) {
         brain.setCurrentPlayer(Player.WHITE);
       } else {
         brain.setCurrentPlayer(Player.BLACK);
       }
       id++;
-      //System.out.println("-----------------------------------END------------------------------------");
     }
+    System.out.println(board);
   }
 
   public static void printByteArray(byte[] moveset) {
@@ -120,25 +128,24 @@ public class Brain {
     } else {
       v = minimize(-MAX, MAX, 0);
     }
+    System.out.println(v);
     return v;
   }
 
   private int maximize(int alpha, int beta, int depth) {
     // Change condition to depth == 0
-    if (depth == maxDepth) {
+    if (depth == maxDepth || gameOver) {
       return evaluate(board);
     }
     depth++;
 
     int v = -MAX;
     int best = -MAX;
-    for (byte from : board.getPiecePositions(1)) {     
-      //System.out.print("Max:");
-      //printByteArray(board.getPiecePositions(1));
+    for (byte from : board.getPiecePositions(1)) {
       for (byte to : MovesetFactory.getValidMoveset(from, board)) {
         byte removedPiece = board.move(from, to);
-        if (removedPiece == -ChessBoard.king) {
-          System.out.println("----------------------------------KING------------------------------------");
+        if (depth == 1 && removedPiece == -ChessBoard.king) {
+          gameOver = true;
         }
         v = Math.max(v, minimize(alpha, beta, depth));
         board.undo(from, to, removedPiece);
@@ -146,9 +153,7 @@ public class Brain {
           return v;
         }
         alpha = Math.max(alpha, v);
-        //System.out.println("ALPHA:" + alpha);
         if (currentPlayer == Player.BLACK && depth == 1 && alpha > best) {
-          //System.out.println("----------------------------------ASSIGN------------------------------------");
           bestMove = new byte[]{from, to};
           best = alpha;
         }
@@ -159,7 +164,7 @@ public class Brain {
 
   private int minimize(int alpha, int beta, int depth) {
     // Change condition to depth == 0
-    if (depth == maxDepth) {
+    if (depth == maxDepth || gameOver) {
       return evaluate(board);
     }
     depth++;
@@ -167,12 +172,10 @@ public class Brain {
     int v = MAX;
     int best = MAX;
     for (byte from : board.getPiecePositions(-1)) {
-      //System.out.print("Min:");
-      //printByteArray(board.getPiecePositions(-1));
       for (byte to : MovesetFactory.getValidMoveset(from, board)) {
         byte removedPiece = board.move(from, to);
-        if (removedPiece == ChessBoard.king) {
-         System.out.println("----------------------------------KING------------------------------------");
+        if (depth == 1 && removedPiece == ChessBoard.king) {
+          gameOver = true;
         }
         v = Math.min(v, maximize(alpha, beta, depth));
         board.undo(from, to, removedPiece);
@@ -182,7 +185,6 @@ public class Brain {
         beta = Math.min(beta, v);
         // Ask BEN!
         if (currentPlayer == Player.WHITE && depth == 1 && beta < best) {
-          //System.out.println("----------------------------------ASSIGN------------------------------------");
           bestMove = new byte[]{from, to};
           best = beta;
         }
@@ -190,6 +192,104 @@ public class Brain {
     }
     return v;
   }
+//  public byte[] chooseMove(Player player) {;
+//    Node best;
+//    if (player == Player.BLACK) {
+//      best = maximize(-MAX, MAX, new Node(null, 0, (byte) 0, (byte) 0, 0));
+//    } else {
+//      best = minimize(-MAX, MAX, new Node(null, 0, (byte) 0, (byte) 0, 0));
+//    }
+//    printByteArray(new byte[]{best.getFrom(), best.getTo()});
+//    return new byte[]{best.getFrom(), best.getTo()};
+//  }
+//  
+//  private Node maximize(int alpha, int beta, Node node) {
+//    if(isTerminalState() || node.getDepth() == maxDepth){
+//      node.setUtility(evaluate(board));
+//      return node; 
+//    }
+//    
+//    
+//    int local = -Integer.MAX_VALUE; 
+//    int depth = node.getDepth() + 1; 
+//    
+//    for (byte from : board.getPiecePositions(Player.BLACK.value * ChessBoard.king)) {
+//      for (byte to : MovesetFactory.getValidMoveset(from, board)) {
+//        byte removed = board.move(from, to);
+//        if (removed == Player.BLACK.value * ChessBoard.king) {
+//          gameOver = true;
+//        }
+//        if(node.getUtility() < minimize(alpha, beta, new Node(from, to, depth, node)).getUtility()){
+//          
+//        }
+//        board.undo(from, to, removed);
+//      }
+//    }
+//    
+//    return null;
+//  }
+//
+//  private Node maximize(int alpha, int beta, Node node) {
+//    if (node.getDepth() == maxDepth || gameOver) {
+//      //node.setUtility(evaluate(board));
+//      return node;
+//    }
+//
+//    System.out.println("MAXIMIZE with a depth of " + node.getDepth());
+//    Node nextNode = new Node(node, -MAX, (byte) 0, (byte) 0, node.getDepth() + 1);
+//    for (byte from : board.getPiecePositions(1)) {
+//      for (byte to : MovesetFactory.getValidMoveset(from, board)) {
+//        byte removedPiece = board.move(from, to);
+//        if (nextNode.getDepth() == 1 && removedPiece == -ChessBoard.king) {
+//          gameOver = true;
+//        }
+//        nextNode.setUtility(Math.max(nextNode.getUtility(), minimize(alpha, beta, nextNode).getUtility()));
+//        board.undo(from, to, removedPiece);
+//        if (nextNode.getUtility() >= beta) {
+//          return  ;
+//        }
+//        System.out.println("The utility is " + nextNode.getUtility() + " for the move from " + nextNode.getFrom() + " to " + nextNode.getTo());
+//        alpha = Math.max(alpha, nextNode.getUtility());
+//        if (nextNode.getDepth() == 1 && alpha > nextNode.getUtility()) {
+//          nextNode.setFrom(from);
+//          nextNode.setTo(to);
+//        }
+//      }
+//    }
+//    return nextNode;
+//  }
+//
+//  private Node minimize(int alpha, int beta, Node node) {
+//    if (node.getDepth() == maxDepth || gameOver) {
+//      node.setUtility(evaluate(board));
+//      return node;
+//    }
+//
+//    System.out.println("MINIMIZE with a depth of " + node.getDepth());
+//    Node nextNode = new Node(MAX, (byte) 0, (byte) 0, node.getDepth() + 1);
+//    for (byte from : board.getPiecePositions(-1)) {
+//      for (byte to : MovesetFactory.getValidMoveset(from, board)) {
+//        byte removedPiece = board.move(from, to);
+//        if (nextNode.getDepth() == 1 && removedPiece == ChessBoard.king) {
+//          gameOver = true;
+//        }
+//        nextNode.setUtility(Math.min(nextNode.getUtility(), maximize(alpha, beta, nextNode).getUtility()));
+//        System.out.println("The utility is " + nextNode.getUtility() + " for the move from " + from + " to " + to);
+//        board.undo(from, to, removedPiece);
+//        if (nextNode.getUtility() <= alpha) {
+//          return nextNode;
+//        }
+//        beta = Math.min(beta, nextNode.getUtility());
+//        if (nextNode.getDepth() == 1 && beta < nextNode.getUtility()) {
+//          nextNode.setFrom(from);
+//          nextNode.setTo(to);
+//        }
+//      }
+//    }
+//    return nextNode;
+//  }
+  
+  
 
   public int evaluate(ChessBoard board) {
     return evaluate(board, 1) - evaluate(board, -1);
@@ -200,7 +300,7 @@ public class Brain {
     for (byte from : board.getPiecePositions(color)) {
       value += (int) 5 * getWorth(board.getPiece(from)) + 2 * positionWorths.get((int) from);
     }
-    value += 3 * (getAttackingPieces(color) - getAttackingPieces(-color));
+    value += 2 * (getAttackingPieces(color) - getAttackingPieces(-color));
     return value;
   }
 
@@ -216,11 +316,11 @@ public class Brain {
     return attackingPieces;
   }
 
-  private byte getWorth(byte piece) {
+  private int getWorth(byte piece) {
     switch (piece) {
       case ChessBoard.king:
       case -ChessBoard.king:
-        return Byte.MAX_VALUE;
+        return 10000;
       case ChessBoard.queen:
       case -ChessBoard.queen:
         return 9;
@@ -258,5 +358,53 @@ public class Brain {
 
   public void setCurrentPlayer(Player currentPlayer) {
     this.currentPlayer = currentPlayer;
+  }
+
+  private boolean isTerminalState() {
+    return gameOver;
+  }
+
+  class Node {
+
+    private Node parent;
+    private int utility;
+    private byte from;
+    private byte to;
+    private int depth;
+
+    public Node(byte from, byte to, int depth, Node parent) {
+      this.from = from;
+      this.to = to;
+      this.depth = depth;
+      this.parent = parent;
+    }
+
+    public void setUtility(int utility) {
+      this.utility = utility;
+    }
+
+    public int getUtility() {
+      return utility;
+    }
+
+    public byte getFrom() {
+      return from;
+    }
+
+    public byte getTo() {
+      return to;
+    }
+
+    public int getDepth() {
+      return depth;
+    }
+
+    public Node getParent() {
+      return parent;
+    }
+
+    public String toString() {
+      return "Depth: " + depth + " Utility: " + utility + " From: " + from + " To: " + to;
+    }
   }
 }

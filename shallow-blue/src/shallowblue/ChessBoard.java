@@ -5,10 +5,15 @@ import java.io.ByteArrayOutputStream;
 public class ChessBoard {
 
   enum Player {
-
-    WHITE, BLACK
+    WHITE(-1), BLACK(1);
+    public final int value;
+    
+    private Player(int value) {
+      this.value = value;
+    }
   }
-  private static byte[] board = new byte[120];
+  
+  private byte[] board = new byte[120];
   static final byte king = 1;
   static final byte pawn = 2;
   static final byte knight = 3;
@@ -32,15 +37,15 @@ public class ChessBoard {
       board[31 + i] = pawn;
       board[81 + i] = -pawn;
     }
-
-    board[21] = pawn;
+    
+    board[21] = rook;
     board[22] = knight;
     board[23] = bishop;
     board[28] = rook;
     board[27] = knight;
     board[26] = bishop;
-    board[24] = king;
-    board[25] = queen;
+    board[24] = queen;
+    board[25] = king;
 
     board[91] = -rook;
     board[92] = -knight;
@@ -48,8 +53,8 @@ public class ChessBoard {
     board[98] = -rook;
     board[97] = -knight;
     board[96] = -bishop;
-    board[94] = -king;
-    board[95] = -queen;
+    board[94] = -queen;
+    board[95] = -king;
   }
 
   public byte move(byte from, byte to) {
@@ -86,8 +91,6 @@ public class ChessBoard {
     boolean withinBounds = board[from + move] != border;
     boolean isInArmy = board[from] * board[from + move] > 0;
     boolean hasClearPath = true;
-    // Can jump over next piece sometimes...
-    // Pieces randomly disappear...
     if (Math.abs(board[from]) / 4 == 1 && lastMove != 0) {
       hasClearPath = board[from + lastMove] == 0;
     }
@@ -136,6 +139,7 @@ public class ChessBoard {
         throw new IllegalArgumentException("An invalid piece was specified.");
     }
   }
+  
 
   @Override
   public String toString() {

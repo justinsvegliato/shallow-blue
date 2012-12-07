@@ -36,7 +36,8 @@ public class MovesetFactory {
     {11, 22, 33, 44, 55, 66, 77}
   };
 
-  private MovesetFactory() {}
+  private MovesetFactory() {
+  }
 
   public static byte[] getValidMoveset(byte from, ChessBoard board) {
     switch (board.getPiece(from)) {
