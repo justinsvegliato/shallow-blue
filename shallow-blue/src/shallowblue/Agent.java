@@ -1,10 +1,11 @@
 package shallowblue;
 
 import java.util.HashMap;
+import shallowblue.Chessboard.Player;
 
 public class Agent {
 
-  private ChessBoard board;
+  private Chessboard board;
   private int maxDepth;
   private byte[] bestMove;
   private boolean gameOver = false;
@@ -78,34 +79,42 @@ public class Agent {
       put(98, 1);
     }
   };
-//
-//  public static void main(String[] args) {
-//    ChessBoard board = new ChessBoard();
-//    Agent black = new Agent(board, Player.BLACK.value, 4);
-//    Agent white = new Agent(board, Player.WHITE.value, 1);
-//    int currentPlayer = 1;
-//    int move = 1;
-//    
-//    System.out.println(board);
-//    
-//    while (true) {
-//      if (currentPlayer == 1) {
-//        black.selectBestMove();
-//      } else {
-//        white.selectBestMove();
-//      }
-//      int removedPiece = board.move(bestMove[0], bestMove[1]);
-//      System.out.println("Turn: " + currentPlayer + " Move: " + move + "\n" + board);
-//      if (Math.abs(removedPiece) == ChessBoard.king) {
-//        break;
-//      }
-//      currentPlayer = -currentPlayer;
-//      move++;
-//    }
-//    System.out.println("gg bra");
-//  }
 
-  public Agent(ChessBoard board, int color, int maxDepth) {
+  public static void main(String[] args) {
+    Chessboard board = new Chessboard();
+    Agent black = new Agent(board, Player.BLACK.value, 5);
+    Agent white = new Agent(board, Player.WHITE.value, 5);
+    int currentPlayer = 1;
+    int move = 1;
+
+    System.out.println(board);
+
+    byte[] currentMove;
+    while (true) {
+      long startTime = System.currentTimeMillis();
+      if (currentPlayer == 1) {
+        black.selectBestMove();
+        currentMove = black.getBestMove();
+
+      } else {
+        white.selectBestMove();
+        currentMove = white.getBestMove();
+      }
+      long endTime = System.currentTimeMillis();
+      long duration = endTime - startTime;
+      System.out.println(duration);
+      int removedPiece = board.move(currentMove[0], currentMove[1]);
+      System.out.println("Turn: " + currentPlayer + " Move: " + move + "\n" + board);
+      if (Math.abs(removedPiece) == Chessboard.king) {
+        break;
+      }
+      currentPlayer = -currentPlayer;
+      move++;
+    }
+    System.out.println("gg bra");
+  }
+
+  public Agent(Chessboard board, int color, int maxDepth) {
     this.board = board;
     this.color = color;
     this.maxDepth = maxDepth;
@@ -115,7 +124,7 @@ public class Agent {
     return alphaBeta(board, maxDepth, -INFINITY, INFINITY, color);
   }
 
-  private int alphaBeta(ChessBoard board, int depth, int alpha, int beta, int color) {
+  private int alphaBeta(Chessboard board, int depth, int alpha, int beta, int color) {
     if (depth == 0 || gameOver) {
       return getUtilityValue(board, color);
     }
@@ -143,50 +152,67 @@ public class Agent {
     return score;
   }
 
-  private int getUtilityValue(ChessBoard board, int color) {
+  private int getUtilityValue(Chessboard board, int color) {
     int value = evaluate(board, color) - evaluate(board, -color);
     return (int) (value + Math.random() + .5);
   }
 
-  private int evaluate(ChessBoard board, int color) {
+// Combine getAttackingPieces with this. All should be done in the same loops
+// Also think more about a piece pool
+//  private int evaluate(ChessBoard board, int color) {
+//    int value = 0;
+//    for (byte from : board.getPiecePositions(color)) {
+//      value += (int) 5 * getWorth(board.getPiece(from)) + 2 * positionWorths.get((int) from);
+//    }
+//    value += 2 * getAttackingPieces(color);
+//    return value;
+//  }
+//
+//  public int getAttackingPieces(int color) {
+//    int attackingPieces = 0;
+//    for (byte from : board.getPiecePositions(color)) {
+//      for (byte to : MovesetFactory.getValidMoveset(from, board)) {
+//        if (board.getPiece(from) * board.getPiece((byte) (to)) < 0) {
+//          attackingPieces++;
+//        }
+//      }
+//    }
+//    return attackingPieces;
+//  }
+  
+  private int evaluate(Chessboard board, int color) {
     int value = 0;
-    for (byte from : board.getPiecePositions(color)) {
-      value += (int) 5 * getWorth(board.getPiece(from)) + 2 * positionWorths.get((int) from);
-    }
-    value += 2 * getAttackingPieces(color);
-    return value;
-  }
-
-  public int getAttackingPieces(int color) {
     int attackingPieces = 0;
     for (byte from : board.getPiecePositions(color)) {
+      value += 5 * getWorth(board.getPiece(from)) + 2 * positionWorths.get((int) from);
       for (byte to : MovesetFactory.getValidMoveset(from, board)) {
         if (board.getPiece(from) * board.getPiece((byte) (to)) < 0) {
           attackingPieces++;
         }
       }
     }
-    return attackingPieces;
+    value += 2 * attackingPieces;
+    return value;
   }
 
   private int getWorth(byte piece) {
     switch (piece) {
-      case ChessBoard.king:
-      case -ChessBoard.king:
+      case Chessboard.king:
+      case -Chessboard.king:
         return 10000;
-      case ChessBoard.queen:
-      case -ChessBoard.queen:
+      case Chessboard.queen:
+      case -Chessboard.queen:
         return 9;
-      case ChessBoard.rook:
-      case -ChessBoard.rook:
+      case Chessboard.rook:
+      case -Chessboard.rook:
         return 5;
-      case ChessBoard.knight:
-      case ChessBoard.bishop:
-      case -ChessBoard.knight:
-      case -ChessBoard.bishop:
+      case Chessboard.knight:
+      case Chessboard.bishop:
+      case -Chessboard.knight:
+      case -Chessboard.bishop:
         return 3;
-      case ChessBoard.pawn:
-      case -ChessBoard.pawn:
+      case Chessboard.pawn:
+      case -Chessboard.pawn:
         return 1;
       default:
         throw new IllegalArgumentException("An invalid piece was specified");

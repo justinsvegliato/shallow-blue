@@ -2,7 +2,7 @@ package shallowblue;
 
 import java.io.ByteArrayOutputStream;
 
-public class ChessBoard {
+public class Chessboard {
 
   enum Player {
     WHITE(-1), BLACK(1);
@@ -23,7 +23,7 @@ public class ChessBoard {
   static final byte border = 9;
   static final byte empty = 0;
 
-  public ChessBoard() {
+  public Chessboard() {
     for (int i = 0; i < 10; i++) {
       board[0 + i] = border;
       board[10 + i] = border;
@@ -140,7 +140,6 @@ public class ChessBoard {
     }
   }
   
-
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
@@ -153,6 +152,7 @@ public class ChessBoard {
         builder.append("-");
       }
       builder.append(getPieceSymbol(board[i]));
+      //builder.append(i);
       if ((i + 1) % 10 == 0) {
         builder.append("|\n");
       }

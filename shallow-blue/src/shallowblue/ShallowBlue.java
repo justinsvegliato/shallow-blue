@@ -3,7 +3,6 @@ package shallowblue;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -11,15 +10,15 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
-import shallowblue.ChessBoard.Player;
+import shallowblue.Chessboard.Player;
 
 public class ShallowBlue {
 
-  private static ChessBoard board = new ChessBoard();
+  private static Chessboard board = new Chessboard();
 
   public static void main(String[] args) throws IOException, JSONException, InterruptedException {
     // Must update these for each game
-    final String gameId = "42";
+    final String gameId = "52";
     int color = Player.WHITE.value;
 
     final String password = "a923cc0";
@@ -55,7 +54,7 @@ public class ShallowBlue {
         currentMove = getInternalMove(json.getString("lastmove"));
         System.out.println("The opponent's move is " + json.getString("lastmove") + ".");
         removedPiece = board.move(currentMove[0], currentMove[1]);
-        if (Math.abs(removedPiece) == ChessBoard.king) {
+        if (Math.abs(removedPiece) == Chessboard.king) {
           break;
         }
       } else {
@@ -64,13 +63,13 @@ public class ShallowBlue {
 
       agent.selectBestMove();
       currentMove = agent.getBestMove();
-      System.out.println("Our move is " + getCanonicalMove(currentMove));
+      System.out.println("Our move is " + getCanonicalMove(currentMove) + ".");
       pushRequest = new HttpGet(baseUrl + "move/" + credentials + getCanonicalMove(currentMove) + "/");
       response = client.execute(pushRequest);
       EntityUtils.consume(response.getEntity());
       removedPiece = board.move(currentMove[0], currentMove[1]);
       System.out.println(board);
-      if (Math.abs(removedPiece) == ChessBoard.king) {
+      if (Math.abs(removedPiece) == Chessboard.king) {
         break;
       }
     }

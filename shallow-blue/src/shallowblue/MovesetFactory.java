@@ -39,25 +39,25 @@ public class MovesetFactory {
   private MovesetFactory() {
   }
 
-  public static byte[] getValidMoveset(byte from, ChessBoard board) {
+  public static byte[] getValidMoveset(byte from, Chessboard board) {
     switch (board.getPiece(from)) {
-      case ChessBoard.king:
-      case -ChessBoard.king:
+      case Chessboard.king:
+      case -Chessboard.king:
         return generateMoveset(from, kingMoveset, board);
-      case ChessBoard.queen:
-      case -ChessBoard.queen:
+      case Chessboard.queen:
+      case -Chessboard.queen:
         return generateMoveset(from, queenMoveset, board);
-      case ChessBoard.rook:
-      case -ChessBoard.rook:
+      case Chessboard.rook:
+      case -Chessboard.rook:
         return generateMoveset(from, rookMoveset, board);
-      case ChessBoard.knight:
-      case -ChessBoard.knight:
+      case Chessboard.knight:
+      case -Chessboard.knight:
         return generateMoveset(from, knightMoveset, board);
-      case ChessBoard.bishop:
-      case -ChessBoard.bishop:
+      case Chessboard.bishop:
+      case -Chessboard.bishop:
         return generateMoveset(from, bishopMoveset, board);
-      case ChessBoard.pawn:
-      case -ChessBoard.pawn:
+      case Chessboard.pawn:
+      case -Chessboard.pawn:
         return generateMoveset(from, pawnMoveset, board);
       default:
         String message = "An invalid piece is at the specified location";
@@ -65,7 +65,7 @@ public class MovesetFactory {
     }
   }
 
-  private static byte[] generateMoveset(byte from, byte[][] moveset, ChessBoard board) {
+  private static byte[] generateMoveset(byte from, byte[][] moveset, Chessboard board) {
     ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 
     byte color = 1;
