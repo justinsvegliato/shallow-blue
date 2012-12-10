@@ -18,8 +18,9 @@ public class ShallowBlue {
 
   public static void main(String[] args) throws IOException, JSONException, InterruptedException {
     // Must update these for each game
-    final String gameId = "52";
-    int color = Player.WHITE.value;
+    final String gameId = "240";
+    final int color = Player.BLACK.value;
+    final int depth = 5;
 
     final String password = "a923cc0";
     final int team = 15;
@@ -33,9 +34,9 @@ public class ShallowBlue {
     HttpResponse response;
     BufferedReader reader;
 
-    Agent agent = new Agent(board, color, 5);
+    Agent agent = new Agent(board, color, depth);
     byte[] currentMove;
-    int removedPiece;
+    int removedPiece = 0;
 
     System.out.println(board);
     while (true) {
@@ -50,10 +51,40 @@ public class ShallowBlue {
       } while (!json.getBoolean("ready"));
 
 
-      if (!json.getString("lastmove").isEmpty()) {
-        currentMove = getInternalMove(json.getString("lastmove"));
-        System.out.println("The opponent's move is " + json.getString("lastmove") + ".");
-        removedPiece = board.move(currentMove[0], currentMove[1]);
+      String lastmove = json.getString("lastmove");
+      if (!lastmove.isEmpty()) {
+        currentMove = getInternalMove(lastmove);
+
+        System.out.println(currentMove[0] + " " + currentMove[1]);
+
+        System.out.println("The opponent's move is " + lastmove + ".");
+        if (lastmove.charAt(currentMove.length - 1) == 'Q') {
+          System.out.println("Queen promotion");
+          removedPiece = board.promote(currentMove[0], currentMove[1]);
+        } else if (lastmove.charAt(0) == 'K') {
+          System.out.println("Moved king");
+          if (Math.abs(currentMove[0] - currentMove[1]) == 2) {
+            System.out.println("King castled");
+            board.castle(currentMove[0], currentMove[1]);
+          } else {
+            removedPiece = board.move(currentMove[0], currentMove[1]);
+          }
+        } else if (lastmove.charAt(0) == 'P') {
+          int delta = Math.abs(currentMove[0] - currentMove[1]);
+          if (delta == 9 || delta == 11) {
+            System.out.println("Pawn attacked");
+            if (board.getPiece(currentMove[1]) == 0) {
+              board.croissant(currentMove[0], currentMove[1]);
+            } else {
+              removedPiece = board.move(currentMove[0], currentMove[1]);
+            }
+          } else {
+            removedPiece = board.move(currentMove[0], currentMove[1]);
+          }
+        } else {
+          removedPiece = board.move(currentMove[0], currentMove[1]);
+        }
+
         if (Math.abs(removedPiece) == Chessboard.king) {
           break;
         }
@@ -69,6 +100,7 @@ public class ShallowBlue {
       EntityUtils.consume(response.getEntity());
       removedPiece = board.move(currentMove[0], currentMove[1]);
       System.out.println(board);
+
       if (Math.abs(removedPiece) == Chessboard.king) {
         break;
       }

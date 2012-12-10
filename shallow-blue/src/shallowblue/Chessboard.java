@@ -5,14 +5,14 @@ import java.io.ByteArrayOutputStream;
 public class Chessboard {
 
   enum Player {
+
     WHITE(-1), BLACK(1);
     public final int value;
-    
+
     private Player(int value) {
       this.value = value;
     }
   }
-  
   private byte[] board = new byte[120];
   static final byte king = 1;
   static final byte pawn = 2;
@@ -37,7 +37,7 @@ public class Chessboard {
       board[31 + i] = pawn;
       board[81 + i] = -pawn;
     }
-    
+
     board[21] = rook;
     board[22] = knight;
     board[23] = bishop;
@@ -83,7 +83,6 @@ public class Chessboard {
         }
       }
     }
-
     return positions.toByteArray();
   }
 
@@ -139,7 +138,7 @@ public class Chessboard {
         throw new IllegalArgumentException("An invalid piece was specified.");
     }
   }
-  
+
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
@@ -152,12 +151,55 @@ public class Chessboard {
         builder.append("-");
       }
       builder.append(getPieceSymbol(board[i]));
-      //builder.append(i);
       if ((i + 1) % 10 == 0) {
         builder.append("|\n");
       }
     }
     builder.append("-------------------------------\n");
     return builder.toString();
+  }
+
+  public byte promote(byte from, byte to) {
+    byte removedPiece = board[to];
+    board[to] = (byte) (getPiece(from) / pawn * queen);
+    board[from] = 0;
+    return removedPiece;
+  }
+
+  public void castle(byte from, byte to) {
+    boolean isBlack = getPiece(from) > 0;
+    boolean isLeft = from - to > 0;
+
+    if (isBlack) {
+      if (isLeft) {
+        board[24] = board[21];
+        board[21] = 0;
+      } else {
+        board[26] = board[28];
+        board[28] = 0;
+      }
+    } else {
+      if (isLeft) {
+        board[94] = board[91];
+        board[91] = 0;
+      } else {
+        board[96] = board[98];
+        board[98] = 0;
+      }
+    }
+    
+    board[to] = board[from];
+    board[from] = 0;
+  }
+  
+  public void croissant(byte from, byte to) {
+    board[to] = board[from];
+    board[from] = 0;
+    
+    if (getPiece(from) > 0) {
+      board[to - 10] = 0;
+    } else {
+      board[to + 10] = 0;
+    }
   }
 }
