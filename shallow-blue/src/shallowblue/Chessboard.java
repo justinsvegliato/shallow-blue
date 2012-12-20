@@ -3,7 +3,7 @@ package shallowblue;
 import java.io.ByteArrayOutputStream;
 
 public class Chessboard {
-
+  
   enum Player {
 
     WHITE(-1), BLACK(1);

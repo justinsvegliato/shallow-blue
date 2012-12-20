@@ -1,3 +1,0 @@
-- Reduction of move set after first move 
-  - Pawn and King
-- Restriction of move set depending on boundaries

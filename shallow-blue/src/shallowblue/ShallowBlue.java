@@ -18,7 +18,7 @@ public class ShallowBlue {
 
   public static void main(String[] args) throws IOException, JSONException, InterruptedException {
     // Must update these for each game
-    final String gameId = "240";
+    final String gameId = "314";
     final int color = Player.BLACK.value;
     final int depth = 5;
 
@@ -84,6 +84,8 @@ public class ShallowBlue {
         } else {
           removedPiece = board.move(currentMove[0], currentMove[1]);
         }
+        
+        System.out.println(board);
 
         if (Math.abs(removedPiece) == Chessboard.king) {
           break;

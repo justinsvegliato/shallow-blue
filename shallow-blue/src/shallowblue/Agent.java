@@ -68,10 +68,14 @@ public class Agent {
   }
 
   private int getPieceWorth(byte piece) {
+    if(piece == Chessboard.king * color){
+      return 30000;
+    }
+    
     switch (piece) {
       case Chessboard.king:
       case -Chessboard.king:
-        return 20000;
+        return 10000;
       case Chessboard.queen:
       case -Chessboard.queen:
         return 900;
@@ -131,7 +135,7 @@ public class Agent {
   // Pawn piece-square table
   private final static int[] whitePawnPieceSquareTable = {
     0, 0, 0, 0, 0, 0, 0, 0,
-    20, 20, 20, 20, 20, 20, 20, 20,
+    20, 20, 20, 30, 30, 20, 20, 20,
     10, 10, 20, 30, 30, 20, 10, 10,
     5, 5, 10, 25, 25, 10, 5, 5,
     0, 0, 0, 20, 20, 0, 0, 0,
@@ -146,7 +150,7 @@ public class Agent {
     0, 0, 0, 20, 20, 0, 0, 0,
     5, 5, 10, 25, 25, 10, 5, 5,
     10, 10, 20, 30, 30, 20, 10, 10,
-    20, 20, 20, 20, 20, 20, 20, 20,
+    20, 20, 20, 30, 30, 20, 20, 20,
     0, 0, 0, 0, 0, 0, 0, 0
   };
   // Knight piece-square table
